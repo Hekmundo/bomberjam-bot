@@ -7,8 +7,10 @@ const allActions = [
   bomberjam.Constants.Right,
   bomberjam.Constants.Down,
   bomberjam.Constants.Stay,
-  bomberjam.Constants.Bomb
+  bomberjam.Constants.Bomb,
 ];
+
+const { Left, Up, Right, Down, Stay, Bomb } = bomberjam.Constants;
 
 const game = new bomberjam.Game();
 
@@ -17,13 +19,13 @@ const game = new bomberjam.Game();
 const logger = new bomberjam.Logger();
 
 // Edit run_game.(bat|sh) to include file logging for any of the four bot processes: node MyBot.js --logging
-if (process.argv.slice(2).some(x => x.toLowerCase() === '--logging'))
+if (process.argv.slice(2).some((x) => x.toLowerCase() === '--logging'))
   logger.setup(`log-${new Date().getTime()}.log`);
 
 const main = async () => {
   // 1) You must send an alphanumerical name up to 32 characters
   // Spaces or special characters are not allowed
-  await game.ready('MyName' + Math.round(Math.random() * (9999 - 1000) + 1000));
+  await game.ready('Hekmundo');
   logger.info('My player ID is ' + game.myPlayerId);
 
   do {
@@ -42,7 +44,11 @@ const main = async () => {
             // TODO found a block to destroy
           }
 
-          const otherPlayer = bomberjam.StateUtils.findAlivePlayerAt(state, x, y);
+          const otherPlayer = bomberjam.StateUtils.findAlivePlayerAt(
+            state,
+            x,
+            y
+          );
           if (otherPlayer && otherPlayer.id !== game.myPlayerId) {
             // TODO found an alive opponent
           }
@@ -69,12 +75,16 @@ const main = async () => {
       logger.info('Tick ' + state.tick + ', sent action: ' + action);
     } catch (err) {
       // Handle your exceptions per tick
-      logger.error('Tick ' + game.state.tick + ', exception: ' + err.toString());
+      logger.error(
+        'Tick ' + game.state.tick + ', exception: ' + err.toString()
+      );
     }
   } while (game.myPlayer.isAlive && !game.state.isFinished);
 };
 
-main().catch(console.err).finally(() => {
-  logger.close();
-  game.close();
-});
+main()
+  .catch(console.err)
+  .finally(() => {
+    logger.close();
+    game.close();
+  });
